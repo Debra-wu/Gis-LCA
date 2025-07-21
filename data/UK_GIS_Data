@@ -1,0 +1,38 @@
+# UK_GIS_Data
+
+This folder contains geospatial datasets used for site suitability analysis of green ammonia plants in the United Kingdom. Each layer represents an important environmental, infrastructural, or regulatory factor used in the AHP-based Multi-Criteria Evaluation (MCE) process.
+
+## Raster Layers
+
+- **landuse.tif**
+  Classified land use map. Used to identify suitable or restricted land types for industrial development.
+
+- **merged_dem.tif**
+  Digital Elevation Model (DEM) for slope derivation. Elevation data is used to calculate terrain slope, which impacts construction feasibility.
+
+- **PVOUT_P.tif**
+  Solar energy potential raster. Indicates photovoltaic output potential in different regions, essential for evaluating renewable energy access.
+
+- **windspeed_p.tif**
+  Wind energy potential raster. Reflects average wind speeds and helps determine suitability for wind power integration.
+
+## Vector Layers
+
+- **road.shp**
+  Road network data. Used for calculating proximity to transportation infrastructure (e.g., buffer analysis).
+
+- **water.shp**
+  River and water body shapefile. Important for environmental impact assessment and buffer zone calculation.
+
+- **reserve.shp**
+  Protected or ecological reserve areas. Construction is restricted or discouraged in these zones.
+
+- **UKcountry_p.shp**
+  National boundary of the United Kingdom. Used as a reference or mask for data clipping and alignment.
+
+- **test_ExportFeatures.shp**
+  Example export from a GIS tool (e.g., ArcGIS/QGIS); may be used for testing purposes.
+
+---
+
+**Note:** All spatial data should be in the same coordinate reference system (CRS) before analysis.
