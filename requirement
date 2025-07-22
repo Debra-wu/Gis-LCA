@@ -21,3 +21,9 @@ scikit-learn>=1.3.0    # Machine learning tools, used here for KMeans clustering
 # --------------------------------------------
 
 matplotlib>=3.7.0      # Plotting and data visualization
+
+# --------------------------------------------
+# Progress Monitoring
+# --------------------------------------------
+
+tqdm>=4.66.0           # Fast, extensible progress bar for loops and processing tasks
