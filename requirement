@@ -1,0 +1,23 @@
+# --------------------------------------------
+# Core Geospatial and Scientific Python Packages
+# --------------------------------------------
+
+rasterio>=1.3.0        # For reading and writing raster datasets
+geopandas>=0.13.0      # For handling vector geospatial data using pandas-like interface
+shapely>=2.0.0         # For manipulation and analysis of planar geometric objects
+fiona>=1.9.0           # For reading and writing vector data using GDAL/OGR
+pyproj>=3.5.0          # For coordinate transformations and CRS definitions
+
+# --------------------------------------------
+# Scientific Computing and Machine Learning
+# --------------------------------------------
+
+numpy>=1.24.0          # Fundamental package for numerical computation
+pandas>=1.5.0          # Data structures and data analysis tools
+scikit-learn>=1.3.0    # Machine learning tools, used here for KMeans clustering
+
+# --------------------------------------------
+# Visualization
+# --------------------------------------------
+
+matplotlib>=3.7.0      # Plotting and data visualization
