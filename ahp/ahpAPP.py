@@ -4,6 +4,7 @@ from ahp_core import AHPMatrixInput
 from ahp_core import generate_consistent_matrix
 import tkinter as tk
 from tkinter import messagebox
+import json
 
 
 class AHPApp:
@@ -58,6 +59,8 @@ class AHPApp:
 
         msg = "\n".join([f"{k}: {v}" for k, v in self.final_weights.items()])
         messagebox.showinfo("Final Weights for All Factors (for GIS weighted overlay)", msg)
+        with open("weights.json", "w", encoding="utf-8") as f:
+            json.dump(self.final_weights, f, ensure_ascii=False, indent=2)
 
     def auto_calculate(self):
         self.weights.clear()
