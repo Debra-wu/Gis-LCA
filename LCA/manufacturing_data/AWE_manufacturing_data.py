@@ -1,0 +1,73 @@
+impact_assessment_result_dict = {
+    "Human non-carcinogenic toxicity": {"amount": 0.009167, "unit": "kg 1,4-DCB"},
+    "Terrestrial ecotoxicity": {"amount": 0.009567, "unit": "kg 1,4-DCB"},
+    "Marine ecotoxicity": {"amount": 0.000994, "unit": "kg 1,4-DCB"},
+    "Global warming": {"amount": 0.009415, "unit": "kg CO2 eq"},
+    "Freshwater ecotoxicity": {"amount": 0.000853, "unit": "kg 1,4-DCB"},
+    "Mineral resource scarcity": {"amount": 0.00047, "unit": "kg Cu eq"},
+    "Human carcinogenic toxicity": {"amount": 0.000341, "unit": "kg 1,4-DCB"},
+    "Fossil resource scarcity": {"amount": 0.001989, "unit": "kg oil eq"},
+    "Land use": {"amount": 0.000662, "unit": "m2a crop eq"},
+    "Ionizing radiation": {"amount": 0.000203, "unit": "kBq Co-60 eq"},
+    "Water consumption": {"amount": 0.000225, "unit": "m3"},
+    "Marine eutrophication": {"amount": 0.000009, "unit": "kg N eq"},
+    "Terrestrial acidification": {"amount": 0.000083, "unit": "kg SO2 eq"},
+    "Ozone formation, Terrestrial ecosystems": {"amount": 0.000081, "unit": "kg NOx eq"},
+    "Ozone formation, Human health": {"amount": 0.000079, "unit": "kg NOx eq"},
+    "Fine particulate matter formation": {"amount": 0.000031, "unit": "kg PM2.5 eq"},
+    "Freshwater eutrophication": {"amount": 0.000018, "unit": "kg P eq"},
+    "Stratospheric ozone depletion": {"amount": 2.1e-07, "unit": "kg CFC11 eq"}
+}
+
+
+CO2_result_dict = {
+    "AWE stack (1kgH2)": {"amount": 1.0, "unit": "kg CO2 eq"},
+    "market for nickel concentrate, 16% Ni | nickel concentrate, 16% Ni | Cutoff, U - GLO": {"amount": 0.054, "unit": "kg CO2 eq"},
+    "market for lanthanum oxide | lanthanum oxide | Cutoff, U - GLO": {"amount": 0.0005, "unit": "kg CO2 eq"},
+    "market for cerium oxide | cerium oxide | Cutoff, U - GLO": {"amount": 0.0008, "unit": "kg CO2 eq"},
+    "market for zirconium oxide | zirconium oxide | Cutoff, U - GLO": {"amount": 0.0018, "unit": "kg CO2 eq"},
+    "market for yttrium oxide | yttrium oxide | Cutoff, U - GLO": {"amount": 0.0002, "unit": "kg CO2 eq"},
+    "market for electricity, medium voltage, renewable energy products | electricity, medium voltage, renewable energy products | Cutoff, U - CH": {"amount": 0.6, "unit": "kg CO2 eq"},
+    "manganese production | manganese | Cutoff, U - RER": {"amount": 0.0002, "unit": "kg CO2 eq"},
+    "market for glass fibre | glass fibre | Cutoff, U - GLO": {"amount": 0.0002, "unit": "kg CO2 eq"},
+    "market for steel, chromium steel 18/8 | steel, chromium steel 18/8 | Cutoff, U - GLO": {"amount": 7e-05, "unit": "kg CO2 eq"},
+    "market for strontium carbonate | strontium carbonate | Cutoff, U - GLO": {"amount": 0.0001, "unit": "kg CO2 eq"},
+    "market for iron chloride | iron chloride | Cutoff, U - GLO": {"amount": 0.0003, "unit": "kg CO2 eq"},
+    "market for graphite | graphite | Cutoff, U - GLO": {"amount": 0.0003, "unit": "kg CO2 eq"},
+    "market for polytetrafluoroethylene | PTFE | Cutoff, U - GLO": {"amount": 0.0006, "unit": "kg CO2 eq"},
+    "market for polycarbonate | polycarbonate | Cutoff, U - GLO": {"amount": 0.0005, "unit": "kg CO2 eq"},
+    "market for polypropylene | polypropylene | Cutoff, U - GLO": {"amount": 0.0004, "unit": "kg CO2 eq"},
+    "market for rubber | rubber | Cutoff, U - GLO": {"amount": 0.0004, "unit": "kg CO2 eq"},
+    "market for epoxy resin | epoxy resin | Cutoff, U - GLO": {"amount": 0.0003, "unit": "kg CO2 eq"},
+    "market for polyphenylene sulfide | PPS | Cutoff, U - GLO": {"amount": 0.0004, "unit": "kg CO2 eq"},
+    "market for stainless steel | stainless steel | Cutoff, U - GLO": {"amount": 0.0005, "unit": "kg CO2 eq"},
+    "market for copper | copper | Cutoff, U - GLO": {"amount": 0.0003, "unit": "kg CO2 eq"},
+    "market for tin | tin | Cutoff, U - GLO": {"amount": 0.0001, "unit": "kg CO2 eq"},
+    "market for lead | lead | Cutoff, U - GLO": {"amount": 0.0001, "unit": "kg CO2 eq"},
+    "market for silver | silver | Cutoff, U - GLO": {"amount": 0.0001, "unit": "kg CO2 eq"},
+    "market for gold | gold | Cutoff, U - GLO": {"amount": 0.0001, "unit": "kg CO2 eq"},
+    "market for platinum | platinum | Cutoff, U - GLO": {"amount": 0.0001, "unit": "kg CO2 eq"},
+    "market for aluminum | aluminum | Cutoff, U - GLO": {"amount": 0.0002, "unit": "kg CO2 eq"}
+}
+
+
+normalized_impact_dict = {
+    "Marine ecotoxicity": {"amount": 0.00099, "unit": "%"},
+    "Freshwater ecotoxicity": {"amount": 0.00085, "unit": "%"},
+    "Human carcinogenic toxicity": {"amount": 0.00034, "unit": "%"},
+    "Human non-carcinogenic toxicity": {"amount": 0.00917, "unit": "%"},
+    "Terrestrial ecotoxicity": {"amount": 0.00957, "unit": "%"},
+    "Freshwater eutrophication": {"amount": 0.00002, "unit": "%"},
+    "Marine eutrophication": {"amount": 0.00001, "unit": "%"},
+    "Ozone formation, Terrestrial ecosystems": {"amount": 0.00008, "unit": "%"},
+    "Fossil resource scarcity": {"amount": 0.00199, "unit": "%"},
+    "Ozone formation, Human health": {"amount": 0.00008, "unit": "%"},
+    "Ionizing radiation": {"amount": 0.0002, "unit": "%"},
+    "Water consumption": {"amount": 0.00023, "unit": "%"},
+    "Global warming": {"amount": 0.00942, "unit": "%"},
+    "Terrestrial acidification": {"amount": 0.00008, "unit": "%"},
+    "Fine particulate matter formation": {"amount": 0.00003, "unit": "%"},
+    "Land use": {"amount": 0.00066, "unit": "%"},
+    "Stratospheric ozone depletion": {"amount": 2.1e-07, "unit": "%"},
+    "Mineral resource scarcity": {"amount": 0.00047, "unit": "%"}
+}
