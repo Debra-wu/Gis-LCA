@@ -66,12 +66,12 @@ def clip_vector_to_boundary(vector_path, boundary_shp, out_path, use_spatial_ind
     print_crs_info(f"Vector data {vector_path}", gdf.crs)
 
     boundary = gpd.read_file(boundary_shp)
-    print_crs_info(f"Boundary vector {boundary_shp}", boundary.crs)
+    print_crs_info(f"Boundary Vector {boundary_shp}", boundary.crs)
 
     if gdf.empty:
         raise ValueError(f"Vector data{vector_path}is empty！")
     if boundary.empty:
-        raise ValueError(f"Boundary vector{boundary_shp}is empty！")
+        raise ValueError(f"Boundary Vector{boundary_shp}is empty！")
 
     # 统一使用WKT进行坐标转换
     if gdf.crs != boundary.crs:
