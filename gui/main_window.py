@@ -452,9 +452,9 @@ class GreenAmmoniaApp:
 
         try:
             # 获取边界数据路径
-            boundary_path = self.inputs["Boundary vector"].get()
+            boundary_path = self.inputs["Boundary Vector"].get()
             if not boundary_path or not os.path.exists(boundary_path):
-                messagebox.showwarning("Warning", "Boundary vector file does not exist, please check your input")
+                messagebox.showwarning("Warning", "Boundary Vector file does not exist, please check your input")
                 return
 
             # 读取边界数据
