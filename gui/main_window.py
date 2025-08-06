@@ -11,6 +11,11 @@ import geopandas as gpd
 from matplotlib.patches import Patch
 import json
 import os
+from LCA.Data_visualization.data_visualization import EmissionCostPopup
+from LCA.Data_visualization.data_processing import cost_index_adjustment
+from LCA.Data_visualization.cepci_data import cepci_dict
+from LCA.Data_visualization.data_collection.impact_result_data.total_emission_summary import total_emission_data
+from LCA.Data_visualization.data_collection.economy_result_data.adjusted_economic_summary import adjusted_capex, adjusted_opex
 
 # 增强中文字体兼容性
 plt.rcParams["font.family"] = ["Microsoft YaHei", "SimHei", "WenQuanYi Micro Hei", "Heiti TC"]
@@ -531,8 +536,13 @@ class GreenAmmoniaApp:
         # 拆分导出按钮为栅格和矢量
         ttk.Button(filter_frame, text="Export Raster", command=self.export_filtered_raster).pack(side=tk.LEFT, padx=5)
         # ttk.Button(filter_frame, text="导出矢量", command=self.export_filtered_vector).pack(side=tk.LEFT, padx=5)
+        ttk.Button(filter_frame, text="Emission & Cost Viewer", command=self.open_emission_cost_popup).pack(
+            side=tk.LEFT, padx=5)
 
         self.map_window.protocol("WM_DELETE_WINDOW", self.on_map_window_close)
+
+    def open_emission_cost_popup(self):
+        EmissionCostPopup(self.map_window)
 
     def update_map_display(self, threshold=None):
         self.map_ax.clear()

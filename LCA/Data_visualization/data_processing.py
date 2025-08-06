@@ -54,23 +54,21 @@ for tech, data in capex_data.items():
     adjusted_capex_to_UK[tech] = adjusted_cost
 
 # OPEX 处理
+# OPEX 处理（不使用 Cost-to-Capacity Scaling）
 for tech, data in opex_data.items():
     if "amount" not in data or "capacity" not in data:
         continue  # 跳过不适用的条目，如 electricity price from wind
 
     original_cost = data["amount"]
-    original_capacity = data["capacity"]
     location = data["location"]
 
-    # Step 1: Cost-to-Capacity Scaling
-    scaled_cost = cost_to_capacity_scaling(C1=original_cost, S1=original_capacity, S2=target_capacity, n=scaling_exponent)
-
-    # Step 2: Location Factor to UK
+    # 仅进行 Location Factor 调整
     location_factor = location_factors['UK_Edinburgh'] / location_factors[location]
-    adjusted_cost = location_factor_cost(C_origin=scaled_cost, location_factor=location_factor)
+    adjusted_cost = location_factor_cost(C_origin=original_cost, location_factor=location_factor)
 
     # 保存结果
     adjusted_opex_to_UK[tech] = adjusted_cost
+
     # 单独处理 excluding energy generation 的电价（solar 和 wind）
     if "excluding energy generation" in opex_data:
         excl = opex_data["excluding energy generation"]
@@ -181,7 +179,7 @@ import os
 # ⚠️ Make sure adjusted_capex_to_UK and adjusted_opex_to_UK already exist
 # You can place this at the end of your data_processing.py
 
-output_path = os.path.join("LCA", "economy_result_data", "total_emission_summary.py")
+output_path = os.path.join("data_collection", "impact_result_data", "total_emission_summary.py")
 os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 with open(output_path, "w") as f:

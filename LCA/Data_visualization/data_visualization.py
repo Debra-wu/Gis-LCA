@@ -2,14 +2,14 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 # 从结果模块中导入数据
-from data_collection.impact_result_data.total_emission_summary import total_emission_data
-from data_collection.economy_result_data.adjusted_economic_summary import adjusted_capex, adjusted_opex
+from .data_collection.impact_result_data.total_emission_summary import total_emission_data
+from .data_collection.economy_result_data.adjusted_economic_summary import adjusted_capex, adjusted_opex
 
 # ✅ 只导入字典，不重新运行模型
-from cepci_data import cepci_dict
+from .cepci_data import cepci_dict
 
 # ✅ 导入 cost_index_adjustment 函数
-from data_processing import cost_index_adjustment
+from .data_processing import cost_index_adjustment
 
 # Impact category 对应单位（从 LCA impact_assessment_result_dict 提取）
 impact_units = {
@@ -74,6 +74,7 @@ class EmissionCostPopup:
             capex_text = ""
             opex_text = ""
             extra_info = ""
+            capex_adjusted = None  # 用于后续统一 capex_per_kg 判断
 
             if energy == "hydro":
                 capex_base = adjusted_capex["Hydro"]
@@ -112,6 +113,13 @@ class EmissionCostPopup:
                 opex_text = f"OPEX (adjusted): {opex_adjusted:.2f} (GBP/kg)\n"
 
             elif energy == "excluding energy generation":
+                capex_base = adjusted_capex["excluding energy generation"]
+                capex_adjusted = cost_index_adjustment(
+                    capex_base["value"],
+                    cepci_dict[capex_base["time"]],
+                    cepci_dict[construction_year]
+                )
+                capex_per_kg = capex_adjusted * 1e6 / 100_000_000 / 30
                 solar = adjusted_opex["electricity price from solar"]
                 wind = adjusted_opex["electricity price from wind"]
 
@@ -127,30 +135,39 @@ class EmissionCostPopup:
                 )
 
                 extra_info = (
+                    f"CAPEX (adjusted): {capex_adjusted:.2f} Million GBP\n"
                     f"Electricity Price (Solar, adjusted): {solar_adjusted:.2f} GBP/MWh\n"
                     f"Electricity Price (Wind, adjusted): {wind_adjusted:.2f} GBP/MWh\n"
+                    f"CAPEX per kg NH3 (over 30 years): {capex_per_kg:.6f} GBP/kg\n"
                 )
-
             else:
                 raise ValueError("Unknown energy type.")
+
             unit = impact_units.get(impact_category, "kg eq")
-            # 4. Result message
+
+            # 4. 构建最终结果文本
             result = (
                 f"Electrolyzer: {electrolyzer}\n"
                 f"Energy Source: {energy}\n"
                 f"Impact Category: {impact_category}\n"
                 f"Construction Year: {construction_year}\n\n"
                 f"Environmental Impact: {emission_value:.4f} {unit}\n"
-
                 f"Construction Emission: {construction_emission:.4f} kg CO2 eq\n"
-                f"{capex_text}{opex_text}{extra_info}"
+                f"{capex_text}{opex_text}"
             )
+
+            # 5. 添加 CAPEX/kg（如适用）
+            if capex_adjusted is not None:
+                capex_per_kg = capex_adjusted * 1e6 / 100_000_000 / 30
+                result += f"CAPEX per kg NH3 (over 30 years): {capex_per_kg:.6f} GBP/kg\n"
+
+            # 6. 额外信息与注释
+            result += f"{extra_info}\n(Assuming: 30-year lifetime, 100 kt/year green ammonia plant)"
 
             messagebox.showinfo("Result", result)
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to retrieve data:\n{e}")
-
 
 # Run the tkinter app
 if __name__ == "__main__":
