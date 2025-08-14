@@ -11,6 +11,7 @@ import geopandas as gpd
 from matplotlib.patches import Patch
 import json
 import os
+from shapely.geometry import box
 from LCA.Data_visualization.data_visualization import EmissionCostPopup
 from LCA.Data_visualization.data_processing import cost_index_adjustment
 from LCA.Data_visualization.cepci_data import cepci_dict
@@ -545,71 +546,128 @@ class GreenAmmoniaApp:
         EmissionCostPopup(self.map_window)
 
     def update_map_display(self, threshold=None):
-        self.map_ax.clear()
+            # 清空轴并设白色底
+            self.map_ax.clear()
+            self.map_ax.set_facecolor("white")
 
-        if self.map_colorbar is not None:
-            try:
-                self.map_colorbar.remove()
-            except Exception:
-                pass
-            self.map_colorbar = None
+            # 移除旧颜色条
+            if self.map_colorbar is not None:
+                try:
+                    self.map_colorbar.remove()
+                except Exception:
+                    pass
+                self.map_colorbar = None
 
-        if threshold is not None and self.current_data is not None:
-            masked_data = np.ma.masked_where(self.current_data < threshold, self.current_data)
-            data_to_display = masked_data
-            self.map_ax.set_title(f"Suitability Map of Green Ammonia Plant (Threshold ≥ {threshold})")
-        else:
-            data_to_display = self.current_data
-            self.map_ax.set_title("Suitability Map of Green Ammonia Plant")
+            if self.current_data is None:
+                return
 
-        # 显示栅格数据
-        self.map_im = self.map_ax.imshow(
-            data_to_display,
-            cmap=self.current_cmap,
-            vmin=0,
-            vmax=100,
-            extent=self.map_extent,
-            origin='upper'
-        )
+            # ===== 标题 & 阈值处理 =====
+            data_to_display = self.current_data.astype(float).copy()
+            if threshold is not None:
+                thr = float(threshold)
+                data_to_display[data_to_display < thr] = np.nan
+                self.map_ax.set_title(f"Suitability Map of Green Ammonia Plant (Threshold ≥ {thr})")
+            else:
+                self.map_ax.set_title("Suitability Map of Green Ammonia Plant")
 
-        # 显示边界数据
-        if self.boundary_data is not None:
-            self.boundary_data.plot(
-                ax=self.map_ax,
-                facecolor='none',
-                edgecolor='black',
-                linewidth=1.5,
-                alpha=0.8
+            # ===== 渲染栅格 =====
+            self.map_im = self.map_ax.imshow(
+                data_to_display,
+                cmap=self.current_cmap,
+                vmin=0,
+                vmax=100,
+                extent=self.map_extent,
+                origin="upper",
+                zorder=1
             )
 
-        # 添加颜色条
-        cbar_ax = self.map_figure.add_axes([0.92, 0.15, 0.03, 0.7])
-        self.map_colorbar = self.map_figure.colorbar(self.map_im, cax=cbar_ax)
-        self.map_colorbar.set_label('Suitability Score')
+            # ===== 仅把边界外盖白（包含稳健的 CRS 处理）=====
+            if self.boundary_data is not None:
+                # 读取栅格 CRS，并尽量用 WKT 表达
+                raster_crs_wkt = None
+                try:
+                    with rasterio.open(self.result_path) as src:
+                        raster_crs_wkt = src.crs.to_wkt() if src.crs is not None else None
+                except Exception:
+                    pass
 
-        # 图例位置在右下角（避免遮挡）
-        legend_items = [Patch(facecolor='none', edgecolor='black', label='Study Area Boundary')]
-        self.map_ax.legend(handles=legend_items, loc='lower right')
+                # 如果边界的 CRS 与栅格不一致，尝试重投影（用 WKT；失败再回退 EPSG:27700）
+                try:
+                    if raster_crs_wkt is not None and (
+                            self.boundary_data.crs is None or self.boundary_data.crs.to_wkt() != raster_crs_wkt):
+                        self.boundary_data = self.boundary_data.to_crs(raster_crs_wkt)
+                except Exception:
+                    try:
+                        self.boundary_data = self.boundary_data.to_crs("EPSG:27700")
+                    except Exception:
+                        # 实在不行就不转换，但可能导致遮罩不对齐
+                        pass
 
-        # 锁定轴范围
-        self.map_ax.set_xlim(self.map_extent[0], self.map_extent[1])
-        self.map_ax.set_ylim(self.map_extent[2], self.map_extent[3])
+                # 地图外框（按 extent）
+                left, right, bottom, top = self.map_extent
+                outer = box(left, bottom, right, top)
 
-        # 关闭坐标轴显示
-        self.map_ax.set_axis_off()
+                # 合并边界
+                boundary_union = self.boundary_data.geometry.unary_union
 
-        # 更新画布
-        self.map_canvas.draw()
+                # 计算外部区域 = 外框 - 边界
+                try:
+                    outside = outer.difference(boundary_union)
+                    if not outside.is_empty:
+                        gpd.GeoSeries([outside], crs=self.boundary_data.crs).plot(
+                            ax=self.map_ax, facecolor="white", edgecolor="none", zorder=3
+                        )
+                except Exception:
+                    # 如果几何差集失败，不盖白，继续往下画边界线
+                    pass
 
-        # 计算并显示统计信息
-        if threshold is not None and self.current_data is not None:
-            valid_data = self.current_data[self.current_data >= threshold]
-            if valid_data.size > 0:
-                percent_above_threshold = (valid_data.size / self.current_data.size) * 100
-                self.log(f"Area ratio with score ≥ {threshold} : {percent_above_threshold:.2f}%")
-                self.log(f"Average score for area ≥ {threshold}: {np.mean(valid_data):.2f}")
-            else:
-                self.log(f"No area meets the threshold ≥ {threshold} ")
+                # 叠加边界线
+                self.boundary_data.plot(
+                    ax=self.map_ax,
+                    facecolor="none",
+                    edgecolor="black",
+                    linewidth=1.5,
+                    alpha=0.9,
+                    zorder=4
+                )
+
+            # ===== color bar =====
+            cbar_ax = self.map_figure.add_axes([0.92, 0.15, 0.03, 0.7])
+            self.map_colorbar = self.map_figure.colorbar(self.map_im, cax=cbar_ax)
+            self.map_colorbar.set_label("Suitability Score")
+
+            # ===== 图例（右下）=====
+            legend_items = [Patch(facecolor='none', edgecolor='black', label='Study Area Boundary')]
+            self.map_ax.legend(handles=legend_items, loc='lower right')
+
+            # ===== neatline（外框）=====
+            from matplotlib.patches import Rectangle
+            left, right, bottom, top = self.map_extent
+            frame = Rectangle(
+                (left, bottom), right - left, top - bottom,
+                linewidth=1.2, edgecolor='black', facecolor='none', zorder=5
+            )
+            self.map_ax.add_patch(frame)
+
+            # 固定范围；隐藏坐标轴刻度但保留外框
+            self.map_ax.set_xlim(left, right)
+            self.map_ax.set_ylim(bottom, top)
+            self.map_ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
+
+            # 刷新
+            self.map_canvas.draw()
+
+            # 阈值统计
+            if threshold is not None:
+                valid = self.current_data[self.current_data >= float(threshold)]
+                if valid.size > 0:
+                    pct = (valid.size / self.current_data.size) * 100
+                    self.log(f"Area ratio with score ≥ {threshold} : {pct:.2f}%")
+                    self.log(f"Average score for area ≥ {threshold}: {np.mean(valid):.2f}")
+                else:
+                    self.log(f"No area meets the threshold ≥ {threshold}")
+
+            # 外框（当前地图范围）
 
     def apply_threshold(self):
         try:
@@ -628,30 +686,23 @@ class GreenAmmoniaApp:
             if not (0 <= threshold <= 100):
                 messagebox.showerror("Error", "Threshold must be between 0 and 100")
                 return
-
             if self.current_data is None:
                 messagebox.showerror("Error", "No valid data to export")
                 return
 
-            # 应用阈值过滤
+            # 低于阈值的置 0；边界外本来就是 0
             masked_data = np.where(self.current_data < threshold, 0, self.current_data)
 
-            # 选择保存路径
             raster_out_path = filedialog.asksaveasfilename(
                 defaultextension=".tif",
                 filetypes=[("TIFF Files", "*.tif"), ("All Files", "*.*")]
             )
             if not raster_out_path:
-                return  # 用户取消选择
+                return
 
-            # 保存栅格
             with rasterio.open(self.result_path) as src:
                 profile = src.profile
-                profile.update(
-                    dtype=rasterio.float32,
-                    nodata=0,
-                    count=1  # 确保单波段输出
-                )
+                profile.update(dtype=rasterio.float32, nodata=0, count=1)
                 with rasterio.open(raster_out_path, 'w', **profile) as dst:
                     dst.write(masked_data.astype(np.float32), 1)
 

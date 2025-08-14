@@ -75,11 +75,16 @@ class AHPMatrixInput:
         # 归一化处理
         CI = (lambda_max - n) / (n - 1)
         CR = CI / RI_dict.get(n, 1.0)
+        RI = RI_dict.get(n, 1.0)
+        if RI == 0.0:
+            CR = 0.0
+        else:
+            CR = CI / RI
 
         result = {self.items[i]: round(w[i], 4) for i in range(n)}
         self.callback(self.name, result)
 
         msg = f"Level：{self.name}\nWeights：{result}\nCI={CI:.4f}, CR={CR:.4f}"
-        msg += "\n✅ Consistency is acceptable" if CR < 0.1 else "\n❌ Consistency is poor. Please check your input"
+        msg += "\n✅ Consistency is acceptable" if CR < 0.1 or np.isnan(CR) == False else "\n❌ Consistency is poor. Please check your input"
         messagebox.showinfo("Result", msg)
         self.top.destroy()

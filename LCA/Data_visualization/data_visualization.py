@@ -31,7 +31,7 @@ class EmissionCostPopup:
         self.electrolyzers = ["AWE", "PEM", "SOE"]
         self.energy_sources = ["hydro", "solar/wind", "excluding energy generation"]
         self.impact_categories = list(total_emission_data.keys())
-        self.construction_years = [str(y) for y in range(2025, 2031)]
+        self.construction_years = [str(y) for y in range(2025, 2029)]
 
         # Electrolyzer type
         tk.Label(self.top, text="Select Electrolyzer Type:").grid(row=0, column=0, padx=10, pady=5)
